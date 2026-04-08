@@ -8,7 +8,10 @@ app.use(express.urlencoded({extended:true}));
 const connectDB = require('./config/db');
 connectDB();
 
+const userRoutes = require('./routes/userRoutes');
 
+
+app.use('/users',userRoutes);
 
 
 
