@@ -30,7 +30,7 @@ const signup = async (req, res, next) => {
     }
 }
 
-const signin = async (req, res, next) => {
+const login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
         const existingUser = await User.findOne({ username });
@@ -88,7 +88,7 @@ const buyCourses = async (req, res, next) => {
         const findUser = await User.findOneAndUpdate(
             { _id: req.user.id },
             {
-                $push: { purchasedCourses: courses._id }
+                $addToSet: { purchasedCourses: courses._id }
             },
 
             { new: true }
@@ -123,4 +123,4 @@ const purchasedCourses = async (req, res, next) => {
 }
 
 
-module.exports = { signup, signin, getCourses, purchasedCourses, buyCourses }
+module.exports = { signup, login, getCourses, purchasedCourses, buyCourses }
