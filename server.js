@@ -10,9 +10,10 @@ connectDB();
 
 const errorHandler = require('./middlewares/errorHandler');
 const userRoutes = require('./routes/userRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/users',userRoutes);
+app.use('/admin',adminRoutes);
 
 
 app.use(errorHandler);
