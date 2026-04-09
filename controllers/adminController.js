@@ -3,135 +3,136 @@ const Course = require('../models/courseModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const signup = async(req,res,next) => {
-    try{
-        const {username,password} = req.body;
+const signup = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
 
-        const existingAdmin = await Admin.findOne({username});
-        if(existingAdmin){
+        const existingAdmin = await Admin.findOne({ username });
+        if (existingAdmin) {
             return res.status(400).json({
-                message:"Admin already exists"
+                message: "Admin already exists"
             });
         }
 
-        const hashedPassword = await bcrypt.hash(password,10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newAdmin = await Admin.create({
-            username:username,
-            password:hashedPassword
+            username: username,
+            password: hashedPassword
         });
 
         res.status(201).json({
-            message:"Admin created successfully"
+            message: "Admin created successfully"
         });
 
-    } catch(error){
+    } catch (error) {
         next(error);
     }
 }
 
-const login = async(req,res,next) => {
-    try{
-        const {username,password} = req.body;
+const login = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
 
-        const existingAdmin = await Admin.findOne({username});
-        if(!existingAdmin){
+        const existingAdmin = await Admin.findOne({ username });
+        if (!existingAdmin) {
             return res.status(404).json({
-                message:"Admin not found"
+                message: "Admin not found"
             });
         }
 
-        const isMatch = await bcrypt.compare(password,existingAdmin.password);
-        if(!isMatch){
+        const isMatch = await bcrypt.compare(password, existingAdmin.password);
+        if (!isMatch) {
             return res.status(401).json({
-                message:"Invalid credentials"
+                message: "Invalid credentials"
             });
         }
 
         const token = jwt.sign(
-            {id:existingAdmin._id,username:existingAdmin.username},
+            { id: existingAdmin._id, username: existingAdmin.username },
             process.env.SECRET_KEY,
-            {expiresIn:'1h'}
+            { expiresIn: '1h' }
         );
 
         res.status(200).json({
-            message:"Logged in successfully",
-            token:token
+            message: "Logged in successfully",
+            token: token
         });
 
 
-    } catch(error){
+    } catch (error) {
         next(error);
     }
 }
 
 
-const addCourses = async(req,res,next) => {
-    try{
-        const {title,description,price,imageLink,published} = req.body;
+const addCourses = async (req, res, next) => {
+    try {
+        const { title, description, price, imageLink, published } = req.body;
 
         const newCourse = await Course.create({
-            title:title,
-            description:description,
-            price:price,
-            imageLink:imageLink,
-            published: published
+            title: title,
+            description: description,
+            price: price,
+            imageLink: imageLink,
+            published: published,
+            createdBy: req.user.id
         });
 
         res.status(201).json({
-            message:"Course created successfully",
+            message: "Course created successfully",
             courseId: newCourse._id
         });
 
-    } catch(error){
+    } catch (error) {
         next(error);
     }
 }
 
-const updateCourses = async(req,res,next) => {
-    try{
-        const {title,description,price,imageLink,published} = req.body;
+const updateCourses = async (req, res, next) => {
+    try {
+        const { title, description, price, imageLink, published } = req.body;
 
         const findCourse = await Course.findOneAndUpdate(
-            {_id:req.params.courseId},
+            { _id: req.params.courseId },
             {
-                title:title,
+                title: title,
                 description: description,
                 price: price,
                 imageLink: imageLink,
                 published: published
             },
 
-            {new:true}
+            { new: true }
         );
 
-        if(!findCourse){
+        if (!findCourse) {
             return res.status(404).json({
-                message:"No course found"
+                message: "No course found"
             });
         }
 
         res.status(200).json({
-            message:"Course updated successfully"
+            message: "Course updated successfully"
         });
 
-    } catch(error){
+    } catch (error) {
         next(error);
     }
 }
 
-const getCourses = async(req,res,next) => {
-    try{
+const getCourses = async (req, res, next) => {
+    try {
         const allCourses = await Course.find();
         res.status(200).json({
-            courses:allCourses
+            courses: allCourses
         });
 
 
-    } catch(error){
+    } catch (error) {
         next(error);
     }
 }
 
 
-module.exports = {signup,login,addCourses,updateCourses,getCourses};
+module.exports = { signup, login, addCourses, updateCourses, getCourses };
