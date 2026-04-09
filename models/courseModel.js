@@ -1,31 +1,36 @@
 const mongoose = require('mongoose');
 
 const courseSchema = new mongoose.Schema({
-    title:{
-        type:String,
-        required:true
+    title: {
+        type: String,
+        required: true
     },
 
-    description:{
-        type:String,
-        required:true
+    description: {
+        type: String,
+        required: true
     },
 
-    price:{
-        type:Number,
-        required:true
+    price: {
+        type: Number,
+        required: true
     },
 
-    imageLink:{
-        type:String,
-        required:true
+    imageLink: {
+        type: String,
+        required: true
     },
 
-    published:{
-        type:Boolean,
-        default:false
+    published: {
+        type: Boolean,
+        default: false
+    },
+
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Admin"
     }
 });
 
-const Course = mongoose.model("Course",courseSchema);
+const Course = mongoose.model("Course", courseSchema);
 module.exports = Course;
