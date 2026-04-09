@@ -94,7 +94,7 @@ const updateCourses = async (req, res, next) => {
         const { title, description, price, imageLink, published } = req.body;
 
         const findCourse = await Course.findOneAndUpdate(
-            { _id: req.params.courseId },
+            { _id: req.params.courseId , createdBy:req.user.id},
             {
                 title: title,
                 description: description,
